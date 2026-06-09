@@ -2,8 +2,10 @@ import { useState } from "react";
 
 export default function App() {
   const [bill, setBill] = useState("");
-  const [tip, setTip] = useState("0");
-  const [tipFriend, setTipFriend] = useState("0");
+  const [tip, setTip] = useState(0);
+  const [tipFriend, setTipFriend] = useState(0);
+
+  const tipTotal = bill * ((tip + tipFriend) / 2 / 100);
 
   function handleBillValue(value) {
     setBill(value);
@@ -32,8 +34,13 @@ export default function App() {
       <Tip tip={tipFriend} onTipValue={handleTipFriendValue}>
         How did your friend like the service?
       </Tip>
-      <Total bill={bill} tip={tip} friendTip={tipFriend}></Total>
-      <Button onclick={reset}>Reset</Button>
+
+      {bill > 0 && (
+        <>
+          <Total bill={bill} tip={tipTotal}></Total>
+          <Button onclick={reset}>Reset</Button>
+        </>
+      )}
     </>
   );
 }
@@ -41,10 +48,11 @@ export default function App() {
 function Bill({ bill, onBillValue }) {
   return (
     <div>
-      <p>How much was the bill ?</p>
+      <label>How much was the bill ?</label>
       <input
+        placeholder="Bill value"
         value={bill}
-        onChange={(e) => onBillValue(e.target.value)}
+        onChange={(e) => onBillValue(Number(e.target.value))}
         type="number"
       ></input>
     </div>
@@ -55,7 +63,7 @@ function Tip({ children, tip, onTipValue }) {
   return (
     <div>
       <p>{children}</p>
-      <select value={tip} onChange={(e) => onTipValue(e.target.value)}>
+      <select value={tip} onChange={(e) => onTipValue(Number(e.target.value))}>
         <option value="0">Dissatisfied (0%)</option>
         <option value="5">It was okay (5%)</option>
         <option value="10">It was good (10%)</option>
@@ -65,22 +73,11 @@ function Tip({ children, tip, onTipValue }) {
   );
 }
 
-function Total({ bill, tip, friendTip }) {
-  const billAmount = Number(bill);
-
-  if (!billAmount) return null;
-
-  const tipAmount = Number(tip);
-  const tipFriendAmount = Number(friendTip);
-
-  const averageTip = (tipAmount + tipFriendAmount) / 2;
-  const tipTotal = billAmount * (averageTip / 100);
-  const billAmountTotal = billAmount + tipTotal;
-
+function Total({ bill, tip }) {
   return (
-    <h2>
-      You pay ${billAmountTotal} (${billAmount} + ${tipTotal} tip)
-    </h2>
+    <h3>
+      You pay ${bill + tip} (${bill} + ${tip} tip)
+    </h3>
   );
 }
 
