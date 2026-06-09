@@ -1,7 +1,7 @@
 import { useState } from "react";
 
 export default function App() {
-  const [bill, setBill] = useState(0);
+  const [bill, setBill] = useState("");
   const [tip, setTip] = useState("0");
   const [tipFriend, setTipFriend] = useState("0");
 
@@ -18,7 +18,7 @@ export default function App() {
   }
 
   function reset() {
-    setBill(0);
+    setBill("");
     setTip("0");
     setTipFriend("0");
   }
@@ -66,7 +66,22 @@ function Tip({ children, tip, onTipValue }) {
 }
 
 function Total({ bill, tip, friendTip }) {
-  return <h2>You Pay is {bill}</h2>;
+  const billAmount = Number(bill);
+
+  if (!billAmount) return null;
+
+  const tipAmount = Number(tip);
+  const tipFriendAmount = Number(friendTip);
+
+  const averageTip = (tipAmount + tipFriendAmount) / 2;
+  const tipTotal = billAmount * (averageTip / 100);
+  const billAmountTotal = billAmount + tipTotal;
+
+  return (
+    <h2>
+      You pay ${billAmountTotal} (${billAmount} + ${tipTotal} tip)
+    </h2>
+  );
 }
 
 function Button({ children, onclick }) {
